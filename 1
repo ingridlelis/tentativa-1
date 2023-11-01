@@ -1,0 +1,34 @@
+def create_camada_layer(layer_name):
+    caminho = "file://C:/Users/ingri/Documents/UNIVERSIDADE_E_MINICURSOS_IFPB_UFPB_UEPB/IFPB/PROGRAMAÇÃO/AVALIACAO1/ingrid_dados.csv?delimiter=%s&xField=%s&yField=%s&crs=epsg:4326".format(os.getcwd(), ";", "x", "y")
+    camada = QgsVectorLayer(caminho, 'ingrid_dados', 'delimitedtext')
+    QgsProject.instance().addMapLayer(camada)
+    provider = camada.dataProvider()
+    attributes = [
+        QgsField('id', QVariant.Int),
+        QgsField('nome', QVariant.String),
+        QgsField('x', QVariant.Double),
+        QgsField('y', QVariant.Double), 
+    ]
+    provider.addAttributes(attributes)
+
+    camada.updateFields()
+
+def add_camada_feature(layer_name, x, y, id, name):
+    layer = QgsProject.instance().MapLayerByName(layer_name)[0]
+    provider = layer.dataProvider()
+    
+    feature = QgsFeature()
+    feature.setGeometry(QgsPoint(x,y))
+    feature.setAttributes([id, name, x, y])
+    provider.addFeatures([feature])
+    
+    create_camada_layer(camada_layer_name)
+    with open(camada, 'r') as file: 
+        csv_reader = csv.reader(file)
+        i = 0
+        for row in csv_reader: 
+            if len(row) ==3: 
+                i += 1
+                x, y, nome = float(row[0]), float(row[1]), row[2]
+                add_camada_feature(camada_layer_name, x, y, i, nome)
+
